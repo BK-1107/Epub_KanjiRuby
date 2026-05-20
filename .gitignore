@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS-specific files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Temporary extraction folders
+temp_extracted_*/
+extracted_epub/
+extracted_epub_all/
+
+# Input and output EPUBs
+*.epub
+
+# Keep repository folder structure but ignore EPUB files in it
+repository/*.epub
