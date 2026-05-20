@@ -25,8 +25,10 @@ def to_hiragana(katakana):
 def is_kanji(char):
     """
     Checks if a character is a Japanese Kanji.
+    Includes CJK Unified Ideographs and CJK Unified Ideographs Extension A.
     """
-    return 0x4E00 <= ord(char) <= 0x9FFF
+    code = ord(char)
+    return (0x4E00 <= code <= 0x9FFF) or (0x3400 <= code <= 0x4DBF)
 
 def align(surface, reading):
     """
@@ -399,22 +401,17 @@ def run_ruby_annotation(extracted_dir, add_rp=False, include_nav=False):
     """
     tagger = Tagger()
     
-    # Search for files under OEBPS/Text
-    text_dir = os.path.join(extracted_dir, 'OEBPS', 'Text')
-    if not os.path.exists(text_dir):
-        print(f"Error: Text directory not found: {text_dir}")
-        return False
-        
     xhtml_files = []
-    for file in os.listdir(text_dir):
-        if file.endswith('.xhtml') or file.endswith('.html'):
-            # Filter targeted files
-            if not include_nav:
-                # Exclude standard navigation/meta files
-                basename = file.lower()
-                if any(x in basename for x in ('nav', 'toc', 'cover', 'title', 'copyright', 'colophon', 'license')):
-                    continue
-            xhtml_files.append(os.path.join(text_dir, file))
+    for root, _, files in os.walk(extracted_dir):
+        for file in files:
+            if file.lower().endswith(('.xhtml', '.html', '.htm')):
+                # Filter targeted files
+                if not include_nav:
+                    # Exclude standard navigation/meta files
+                    basename = file.lower()
+                    if any(x in basename for x in ('nav', 'toc', 'cover', 'title', 'copyright', 'colophon', 'license')):
+                        continue
+                xhtml_files.append(os.path.join(root, file))
             
     print(f"Found {len(xhtml_files)} target files to process.")
     
